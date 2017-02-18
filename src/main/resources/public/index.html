@@ -3,8 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Co by bylo gdyby...</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<button id="toggle" class="btn btn-danger">toggle</button>
+<div id="roomsContainer" class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <span class="info">Game rooms</span>
+            <button id="addRoom" class="btn btn-primary">Add Room</button>
+            <input id="newRoomName" placeholder="Room name">
+            <div id="roomList"></div>
+        </div>
+    </div>
+</div>
+
+<div id="gameLobbyContainer" class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <span id="roomName" class="label"></span>
+            <button class="btn btn-danger">Start Game</button>
+            <ul id="playerList"></ul>
+        </div>
+    </div>
+</div>
+
+<div id="gameContainer" class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <div id="question">
+                <span id="questionInfo" class="info">Co by bylo gdyby...</span>
+                <input id="newQuestion" placeholder="Dokoncz pytanie">
+                <button id="acceptQuestion" class="btn btn-success">OK</button>
+            </div>
+
+            <div id="answer">
+                <span class="info">Twoje poprzednie pytanie:</span>
+                <span id="oldQuestion" class="old"></span>
+                <input id="newAnswer" placeholder="Twoja odpowiedz">
+                <button id="acceptAnswer" class="btn btn-success">OK</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="resultsContainer" class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <ul id="questionList">
+                <!--DO USUNIECIA-->
+                <h3>Co by bylo gdyby Java nie byla zjebana?</h3>
+                <h4>Byloby super</h4>
+                <!---------------->
+            </ul>
+        </div>
+    </div>
+</div>
 
 <script src="app.js"></script>
 </body>
