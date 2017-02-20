@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jakub.a.kret@gmail.com on 2017-02-18.
@@ -48,11 +49,13 @@ public class GameControls {
         return lobby.usernameTaken(username) || usernameInRooms;
     }
 
-    public void addRoom(String name, Session host) throws JSONException, IOException {
+    public void addRoom(String name, Session host, String username) throws JSONException, IOException {
         if (!roomNameTaken(name)) {
             GameRoom newRoom = new GameRoom(name, host);
             rooms.add(newRoom);
             updateRoomList();
+            lobby.removeUser(host);
+            newRoom.addUser(host, username);
             notifyUser(host, new JSONObject()
                     .put("action", "newRoom")
                     .put("result", "success")
@@ -103,6 +106,34 @@ public class GameControls {
                     .put("username", username)
             );
             //TODO update rooms user list
+        }
+    }
+
+    public void leaveRoom(Session user, String username) throws IOException, JSONException {
+        GameRoom roomToLeave = null;
+        for (GameRoom room : rooms) {
+            if (room.hasUser(user)) {
+                roomToLeave = room;
+            }
+        }
+        if(roomToLeave != null) {
+            if (user.equals(roomToLeave.getHost())) {
+                roomToLeave.notifyAllUsers(new JSONObject()
+                        .put("action", "leave")
+                );
+                Map<Session, String> users = roomToLeave.removeAllUsers();
+                lobby.addUsers(users);
+                rooms.remove(roomToLeave);
+                updateRoomList();
+            }
+            else {
+                roomToLeave.removeUser(user);
+                lobby.addUser(user, username);
+                notifyUser(user, new JSONObject()
+                        .put("action", "leave")
+                );
+                //TODO update user list
+            }
         }
     }
 

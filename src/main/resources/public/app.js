@@ -24,6 +24,9 @@ socket.onmessage = function (msg) {
         case "join":
             joinRoomResult(data);
             break;
+        case "leave":
+            leaveRoomResult(data);
+            break;
     }
 };
 
@@ -39,6 +42,10 @@ id("addRoom").addEventListener("click", function () {
 
 id("newUser").addEventListener("click", function () {
     newUser(id("username").value);
+});
+
+id("leaveRoom").addEventListener("click", function () {
+    leaveRoom();
 });
 
 //HELPER FUNCTIONS
@@ -98,10 +105,9 @@ function addRoom(name) {
         var obj = new Object();
         obj.action = "newRoom";
         obj.roomName = name;
+        obj.username = username;
         socket.send(JSON.stringify(obj));
-        id("roomName").innerHTML = name;
-        id("playerList").innerHTML = "sdfgs";
-        id("questionList").innerHTML = "asdfa";
+        id("roomName").innerHTML = "Pokoj: " + name;
     }
 };
 
@@ -140,11 +146,23 @@ function joinRoom(room) {
 }
 
 function joinRoomResult(data) {
-    console.log(data);
     toggle("rooms");
     toggle("gameLobby");
-    id("roomName").innerHTML = data.roomName;
+    id("roomName").innerHTML = "Pokoj: " + data.roomName;
     hide(id("startGame"));
     hide(id("newQuestion"));
     hide(id("addQuestion"));
+}
+
+function leaveRoom() {
+    var obj = {};
+    obj.action = "leave";
+    obj.username = username;
+    socket.send(JSON.stringify(obj));
+}
+
+function leaveRoomResult(data) {
+    toggle("gameLobby");
+    toggle("rooms");
+
 }

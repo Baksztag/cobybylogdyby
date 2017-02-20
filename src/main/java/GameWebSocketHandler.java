@@ -31,10 +31,13 @@ public class GameWebSocketHandler {
                 controls.newUser(user, req.getUsername());
             }
             else if (req.getAction().equals("newRoom")) {
-                controls.addRoom(req.getRoomName(), user);
+                controls.addRoom(req.getRoomName(), user, req.getUsername());
             }
             else if (req.getAction().equals("join")) {
                 controls.joinRoom(user, req.getRoomName(), req.getUsername());
+            }
+            else if (req.getAction().equals("leave")) {
+                controls.leaveRoom(user, req.getUsername());
             }
 
 

@@ -13,7 +13,14 @@ public class Lobby implements Room {
 
 
     public Lobby() {
-        this.users = new ConcurrentHashMap<Session, String>();
+        this.users = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public String toString() {
+        return "Lobby{" +
+                "usersCount=" + users.size() +
+                '}';
     }
 
     @Override
@@ -62,5 +69,9 @@ public class Lobby implements Room {
     @Override
     public void addUser(Session user, String name) {
         users.put(user, name);
+    }
+
+    public void addUsers(Map<Session, String> users) {
+        this.users.putAll(users);
     }
 }

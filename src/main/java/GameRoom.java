@@ -21,8 +21,21 @@ public class GameRoom implements Room {
     }
 
     @Override
+    public String toString() {
+        return "GameRoom{" +
+                "name='" + name + '\'' +
+                ", \nhost=" + host +
+                ", \nusers=" + users.size() +
+                '}';
+    }
+
+    @Override
     public String getName() {
         return this.name;
+    }
+
+    public Session getHost() {
+        return host;
     }
 
     @Override
@@ -66,5 +79,14 @@ public class GameRoom implements Room {
     @Override
     public void addUser(Session user, String name) {
         users.put(user, new PlayerDetails(name));
+    }
+
+    public Map<Session, String> removeAllUsers() {
+        Map<Session, String> userList = new ConcurrentHashMap<>();
+        for (Session user : users.keySet()) {
+            userList.put(user, users.get(user).username);
+            users.remove(user);
+        }
+        return userList;
     }
 }
