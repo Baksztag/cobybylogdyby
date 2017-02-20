@@ -18,6 +18,9 @@ socket.onmessage = function (msg) {
         case "newRoom":
             newRoomResult(data);
             break;
+        case "roomList":
+            updateRoomList(data);
+            break;
     }
 };
 
@@ -50,7 +53,7 @@ function hide(element) {
     element.setAttribute("disabled", "true");
 }
 
-initUI = function () {
+function initUI() {
     show(id("loginContainer"))
     hide(id("roomsContainer"));
     hide(id("gameLobbyContainer"));
@@ -58,8 +61,8 @@ initUI = function () {
     hide(id("resultsContainer"));
 };
 
-toggle = function (container) {
-    if(id(container + "Container").getAttribute("disabled") === "true") {
+function toggle(container) {
+    if (id(container + "Container").getAttribute("disabled") === "true") {
         show(id(container + "Container"));
     } else {
         hide(id(container + "Container"));
@@ -67,7 +70,7 @@ toggle = function (container) {
 };
 
 function newUser(username) {
-    if(username != "") {
+    if (username != "") {
         var obj = new Object();
         obj.action = "newUser";
         obj.username = username;
@@ -76,7 +79,7 @@ function newUser(username) {
 }
 
 function newUserResult(data) {
-    if(data.result === "success") {
+    if (data.result === "success") {
         username = data.username;
         toggle("login");
         toggle("rooms");
@@ -88,7 +91,7 @@ function newUserResult(data) {
 }
 
 function addRoom(name) {
-    if(name != "") {
+    if (name != "") {
         var obj = new Object();
         obj.action = "newRoom";
         obj.roomName = name;
@@ -100,13 +103,34 @@ function addRoom(name) {
 };
 
 function newRoomResult(data) {
-    console.log(data.result);
-    if(data.result === "success") {
+    if (data.result === "success") {
         toggle("rooms");
         toggle("gameLobby");
     }
     else {
-        id("newRoomError").innerHTML = "Nazwa pokoju " + data.roomName + " jest zajeta.";
+        id("newRoomError").innerHTML = "Nazwa pokoju " + data.roomName + " jest juz zajeta.";
         id("newRoomName").value = "";
     }
+}
+
+function updateRoomList(data) {
+    id("roomList").innerHTML = "";
+    for (var i = 0; i < data.rooms.length; i++) {
+        id("roomList").insertAdjacentHTML("afterbegin", "<button id='room-" + data.rooms[i] + "' class='btn btn-info'>" + data.rooms[i] + "</button>");
+    }
+
+    var rooms = id("roomList").getElementsByTagName("button");
+    for (i = 0; i < rooms.length; i++) {
+        rooms[i].addEventListener("click", function () {
+            var room = this.id.slice(5);
+            joinRoom(room);
+        })
+    }
+}
+
+function joinRoom(room) {
+    var obj = new Object();
+    obj.action = "join";
+    obj.roomName = room;
+    socket.send(JSON.stringify(obj));
 }

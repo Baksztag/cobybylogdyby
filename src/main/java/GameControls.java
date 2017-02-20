@@ -22,6 +22,7 @@ public class GameControls {
     public void newUser(Session user, String username) throws JSONException, IOException {
         if (!usernameTaken(username)) {
             lobby.addUser(user, username);
+            updateRoomList();
             user.getRemote().sendString(String.valueOf(
                     new JSONObject()
                             .put("action", "newUser")
@@ -54,11 +55,15 @@ public class GameControls {
             updateRoomList();
             notifyUser(host, new JSONObject()
                     .put("action", "newRoom")
-                    .put("result", "success"));
+                    .put("result", "success")
+                    .put("roomName", name)
+            );
         } else {
             notifyUser(host, new JSONObject()
                     .put("action", "newRoom")
-                    .put("result", "error"));
+                    .put("result", "error")
+                    .put("roomName", name)
+            );
         }
 
     }
@@ -92,7 +97,7 @@ public class GameControls {
             roomNames.add(room.getName());
         }
         notifyAllUsers(new JSONObject()
-                .put("action", "RoomList")
+                .put("action", "roomList")
                 .put("rooms", roomNames));
     }
 }

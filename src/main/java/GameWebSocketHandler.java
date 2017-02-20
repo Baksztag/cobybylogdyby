@@ -42,9 +42,4 @@ public class GameWebSocketHandler {
             System.err.println(e);
         }
     }
-
-
-    private void updateRoomList() {
-//        controls.ge
-    }
 }
