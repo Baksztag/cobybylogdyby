@@ -3,6 +3,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jakub.a.kret@gmail.com on 2017-02-20.
@@ -11,20 +12,36 @@ public class Lobby implements Room {
     private Map<Session, String> users;
 
 
+    public Lobby() {
+        this.users = new ConcurrentHashMap<>();
+    }
+
     @Override
     public boolean hasUser(Session user) {
         return users.keySet().contains(user);
     }
 
     @Override
+    public boolean usernameTaken(String username) {
+        for(String name : users.values()) {
+            if(name.equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void notifyUser(Session user, JSONObject notification) throws IOException {
-        user.getRemote().sendString(String.valueOf(notification));
+        if(hasUser(user)) {
+            user.getRemote().sendString(String.valueOf(notification));
+        }
     }
 
     @Override
     public void notifyAllUsers(JSONObject notification) throws IOException {
         for(Session user : users.keySet()) {
-            if(user.isOpen()) {
+            if(user.isOpen() && hasUser(user)) {
                 user.getRemote().sendString(String.valueOf(notification));
             }
         }

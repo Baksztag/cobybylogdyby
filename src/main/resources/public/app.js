@@ -2,13 +2,20 @@
  * Created by Admin on 2017-02-18.
  */
 var socket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/game/");
+var username = "";
 
 socket.onopen = function () {
     initUI();
 };
 
-socket.onmessage = function () {
+socket.onmessage = function (msg) {
+    var data = JSON.parse(msg.data);
 
+    switch (data.action) {
+        case "newUser":
+            newUserResult(data);
+            break;
+    }
 };
 
 socket.onclose = function () {
@@ -19,6 +26,10 @@ socket.onclose = function () {
 id("addRoom").addEventListener("click", function () {
     addRoom(id("newRoomName").value);
     id("newRoomName").value = "";
+});
+
+id("newUser").addEventListener("click", function () {
+    newUser(id("username").value);
 });
 
 //HELPER FUNCTIONS
@@ -37,7 +48,8 @@ function hide(element) {
 }
 
 initUI = function () {
-    show(id("roomsContainer"));
+    show(id("loginContainer"))
+    hide(id("roomsContainer"));
     hide(id("gameLobbyContainer"));
     hide(id("gameContainer"));
     hide(id("resultsContainer"));
@@ -50,6 +62,27 @@ toggle = function (container) {
         hide(id(container + "Container"));
     }
 };
+
+function newUser(username) {
+    if(username != "") {
+        var obj = new Object();
+        obj.action = "newUser";
+        obj.username = username;
+        socket.send(JSON.stringify(obj));
+    }
+}
+
+function newUserResult(data) {
+    if(data.result === "success") {
+        username = data.username;
+        toggle("login");
+        toggle("rooms");
+    }
+    else {
+        id("loginError").innerHTML = "Nick " + data.username + " jest zajety."
+        id("username").value = "";
+    }
+}
 
 function addRoom(name) {
     if(name != "") {

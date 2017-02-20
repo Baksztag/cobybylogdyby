@@ -8,6 +8,7 @@ import java.io.IOException;
  */
 public interface Room {
     boolean hasUser(Session user);
+    boolean usernameTaken(String username);
     void notifyUser(Session user, JSONObject notification) throws IOException;
     void notifyAllUsers(JSONObject notification) throws IOException;
     void removeUser(Session user);

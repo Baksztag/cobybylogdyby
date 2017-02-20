@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -22,19 +23,25 @@ public class GameWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
         System.out.println(message);
+        Gson gson = new Gson();
+        Request req = gson.fromJson(message, Request.class);
+
+        try {
+            switch (req.getAction()) {
+                case "newUser":
+                    controls.newUser(user, req.getUsername());
+                    break;
+                default:
+                    System.out.println("Unsupported requested action '" + req.getAction() + "'");
+                    break;
+            }
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
 
     private void updateRoomList() {
 //        controls.ge
     }
-
-//
-//    private void notifyUsers(Map<Session, Session> users, JSONObject notification) throws IOException {
-//        for(Session user : users.keySet()) {
-//            if(user.isOpen()) {
-//                user.getRemote().sendString(String.valueOf(notification));
-//            }
-//        }
-//    }
 }

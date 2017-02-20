@@ -11,3 +11,7 @@
     display: block;
     font-weight: bold;
 }
+
+.info-error {
+    color: red;
+}

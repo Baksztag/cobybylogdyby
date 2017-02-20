@@ -3,13 +3,20 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jakub.a.kret@gmail.com on 2017-02-20.
  */
 public class GameRoom implements Room {
+    private String name;
     private Map<Session, PlayerDetails> users;
 
+
+    public GameRoom(String name) {
+        this.name = name;
+        this.users = new ConcurrentHashMap<>();
+    }
 
     @Override
     public boolean hasUser(Session user) {
@@ -17,14 +24,26 @@ public class GameRoom implements Room {
     }
 
     @Override
+    public boolean usernameTaken(String username) {
+        for(PlayerDetails player : users.values()) {
+            if(player.username.equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void notifyUser(Session user, JSONObject notification) throws IOException {
-        user.getRemote().sendString(String.valueOf(notification));
+        if(hasUser(user)) {
+            user.getRemote().sendString(String.valueOf(notification));
+        }
     }
 
     @Override
     public void notifyAllUsers(JSONObject notification) throws IOException {
         for(Session user : users.keySet()) {
-            if(user.isOpen()) {
+            if(user.isOpen() && hasUser(user)) {
                 user.getRemote().sendString(String.valueOf(notification));
             }
         }
