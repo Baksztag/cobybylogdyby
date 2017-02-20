@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<button id="toggle" class="btn btn-danger">toggle</button>
 <div id="roomsContainer" class="container">
     <div class="row">
         <div class="col-sm-8">
@@ -22,9 +21,13 @@
 <div id="gameLobbyContainer" class="container">
     <div class="row">
         <div class="col-sm-8">
-            <span id="roomName" class="label"></span>
+            <span id="roomName" class="banner"></span>
             <button class="btn btn-danger">Start Game</button>
+            <button class="btn btn-primary">Leave Room</button>
+            <span class="info">Gracze:</span>
             <ul id="playerList"></ul>
+            <span class="info">Pytania:</span>
+            <ul id="questionList"></ul>
         </div>
     </div>
 </div>
@@ -52,7 +55,7 @@
 <div id="resultsContainer" class="container">
     <div class="row">
         <div class="col-sm-8">
-            <ul id="questionList">
+            <ul id="resultList">
                 <!--DO USUNIECIA-->
                 <h3>Co by bylo gdyby Java nie byla zjebana?</h3>
                 <h4>Byloby super</h4>

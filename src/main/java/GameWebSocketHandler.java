@@ -15,6 +15,6 @@ public class GameWebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
-
+        System.out.println(message);
     }
 }
