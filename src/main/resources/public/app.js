@@ -27,6 +27,9 @@ socket.onmessage = function (msg) {
         case "leave":
             leaveRoomResult(data);
             break;
+        case "listUsers":
+            updateUserList(data);
+            break;
     }
 };
 
@@ -165,4 +168,11 @@ function leaveRoomResult(data) {
     toggle("gameLobby");
     toggle("rooms");
 
+}
+
+function updateUserList(data) {
+    id("playerList").innerHTML = "";
+    data.users.forEach(function (user) {
+        id("playerList").insertAdjacentHTML("afterBegin", "<li>" + user + "</li>");
+    });
 }

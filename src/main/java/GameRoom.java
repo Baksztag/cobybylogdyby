@@ -2,6 +2,8 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -86,6 +88,14 @@ public class GameRoom implements Room {
         for (Session user : users.keySet()) {
             userList.put(user, users.get(user).username);
             users.remove(user);
+        }
+        return userList;
+    }
+
+    public List<String> getUsers() {
+        List<String> userList = new LinkedList<>();
+        for (Session user : users.keySet()) {
+            userList.add(users.get(user).username);
         }
         return userList;
     }

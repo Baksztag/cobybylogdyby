@@ -61,6 +61,7 @@ public class GameControls {
                     .put("result", "success")
                     .put("roomName", name)
             );
+            updateUserList(newRoom);
         } else {
             notifyUser(host, new JSONObject()
                     .put("action", "newRoom")
@@ -105,7 +106,7 @@ public class GameControls {
                     .put("roomName", roomName)
                     .put("username", username)
             );
-            //TODO update rooms user list
+            updateUserList(roomToJoin);
         }
     }
 
@@ -132,9 +133,16 @@ public class GameControls {
                 notifyUser(user, new JSONObject()
                         .put("action", "leave")
                 );
-                //TODO update user list
+                updateUserList(roomToLeave);
             }
         }
+    }
+
+    private void updateUserList(GameRoom room) throws JSONException, IOException {
+        room.notifyAllUsers(new JSONObject()
+                .put("action", "listUsers")
+                .put("users", room.getUsers())
+        );
     }
 
     public void notifyUser(Session user, JSONObject notification) throws IOException {
