@@ -29,9 +29,6 @@ public class GameWebSocketHandler {
 //        controls.ge
     }
 
-//    private void notifyUser(Session user, JSONObject notification) throws IOException {
-//        user.getRemote().sendString(String.valueOf(notification));
-//    }
 //
 //    private void notifyUsers(Map<Session, Session> users, JSONObject notification) throws IOException {
 //        for(Session user : users.keySet()) {
