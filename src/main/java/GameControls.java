@@ -15,7 +15,7 @@ public class GameControls {
 
 
     public GameControls() {
-        this.rooms = new LinkedList<>();
+        this.rooms = new LinkedList<GameRoom>();
         this.lobby = new Lobby();
     }
 
@@ -77,6 +77,35 @@ public class GameControls {
         return false;
     }
 
+    public void updateRoomList() throws JSONException, IOException {
+        List<String> roomNames = new LinkedList<String>();
+        for (Room room : rooms) {
+            roomNames.add(room.getName());
+        }
+        notifyAllUsers(new JSONObject()
+                .put("action", "roomList")
+                .put("rooms", roomNames));
+    }
+
+    public void joinRoom(Session user, String roomName, String username) throws JSONException, IOException {
+        GameRoom roomToJoin = null;
+        for (GameRoom room : rooms) {
+            if (room.getName().equals(roomName)) {
+                roomToJoin = room;
+            }
+        }
+        if (roomToJoin != null) {
+            lobby.removeUser(user);
+            roomToJoin.addUser(user, username);
+            notifyUser(user, new JSONObject()
+                    .put("action", "join")
+                    .put("roomName", roomName)
+                    .put("username", username)
+            );
+            //TODO update rooms user list
+        }
+    }
+
     public void notifyUser(Session user, JSONObject notification) throws IOException {
         lobby.notifyUser(user, notification);
         for (Room room : rooms) {
@@ -89,15 +118,5 @@ public class GameControls {
         for (Room room : rooms) {
             room.notifyAllUsers(notification);
         }
-    }
-
-    public void updateRoomList() throws JSONException, IOException {
-        List<String> roomNames = new LinkedList<>();
-        for (Room room : rooms) {
-            roomNames.add(room.getName());
-        }
-        notifyAllUsers(new JSONObject()
-                .put("action", "roomList")
-                .put("rooms", roomNames));
     }
 }

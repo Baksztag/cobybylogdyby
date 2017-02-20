@@ -17,7 +17,7 @@ public class GameRoom implements Room {
     public GameRoom(String name, Session host) {
         this.name = name;
         this.host = host;
-        this.users = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<Session, PlayerDetails>();
     }
 
     @Override

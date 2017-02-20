@@ -27,16 +27,20 @@ public class GameWebSocketHandler {
         Request req = gson.fromJson(message, Request.class);
 
         try {
-            switch (req.getAction()) {
-                case "newUser":
-                    controls.newUser(user, req.getUsername());
-                    break;
-                case "newRoom":
-                    controls.addRoom(req.getRoomName(), user);
-                    break;
-                default:
-                    System.out.println("Unsupported requested action '" + req.getAction() + "'");
-                    break;
+            if (req.getAction().equals("newUser")) {
+                controls.newUser(user, req.getUsername());
+            }
+            else if (req.getAction().equals("newRoom")) {
+                controls.addRoom(req.getRoomName(), user);
+            }
+            else if (req.getAction().equals("join")) {
+                controls.joinRoom(user, req.getRoomName(), req.getUsername());
+            }
+
+
+            else {
+                System.out.println("Unsupported requested action '" + req.getAction() + "'");
+
             }
         } catch (Exception e) {
             System.err.println(e);

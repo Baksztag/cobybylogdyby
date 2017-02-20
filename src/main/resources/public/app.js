@@ -1,7 +1,7 @@
 /**
  * Created by Admin on 2017-02-18.
  */
-var socket = new WebSocket("wss://" + location.hostname + ":" + location.port + "/game/");
+var socket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/game/");
 var username = "";
 
 socket.onopen = function () {
@@ -20,6 +20,9 @@ socket.onmessage = function (msg) {
             break;
         case "roomList":
             updateRoomList(data);
+            break;
+        case "join":
+            joinRoomResult(data);
             break;
     }
 };
@@ -129,8 +132,19 @@ function updateRoomList(data) {
 }
 
 function joinRoom(room) {
-    var obj = new Object();
+    var obj = {};
     obj.action = "join";
     obj.roomName = room;
+    obj.username = username;
     socket.send(JSON.stringify(obj));
+}
+
+function joinRoomResult(data) {
+    console.log(data);
+    toggle("rooms");
+    toggle("gameLobby");
+    id("roomName").innerHTML = data.roomName;
+    hide(id("startGame"));
+    hide(id("newQuestion"));
+    hide(id("addQuestion"));
 }

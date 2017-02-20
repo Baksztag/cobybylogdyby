@@ -13,7 +13,7 @@ public class Lobby implements Room {
 
 
     public Lobby() {
-        this.users = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<Session, String>();
     }
 
     @Override

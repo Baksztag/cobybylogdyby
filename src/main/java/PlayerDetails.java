@@ -11,6 +11,6 @@ public class PlayerDetails {
 
     public PlayerDetails(String username) {
         this.username = username;
-        questions = new LinkedList<>();
+        questions = new LinkedList<Question>();
     }
 }
