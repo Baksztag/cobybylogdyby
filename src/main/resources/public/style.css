@@ -3,6 +3,10 @@
     font-size: xx-large;
 }
 
+.container {
+    position: absolute;
+}
+
 .info {
     display: block;
     font-weight: bold;

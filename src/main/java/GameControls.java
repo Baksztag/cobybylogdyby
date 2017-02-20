@@ -13,9 +13,14 @@ public class GameControls {
     private List<String> roomNames;
     private Map<Session, String> lobby;
 
+
     public GameControls() {
         this.rooms = new LinkedList<Map<Session, String>>();
         this.roomNames = new LinkedList<String>();
         this.lobby = new ConcurrentHashMap<Session, String>();
+    }
+
+    public void addRoom(String name) {
+
     }
 }
