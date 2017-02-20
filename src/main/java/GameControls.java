@@ -5,15 +5,13 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by jakub.a.kret@gmail.com on 2017-02-18.
  */
 public class GameControls {
     private Lobby lobby;
-    private List<Room> rooms;
+    private List<GameRoom> rooms;
 
 
     public GameControls() {
@@ -21,17 +19,8 @@ public class GameControls {
         this.lobby = new Lobby();
     }
 
-    private boolean usernameTaken(String username) {
-        boolean usernameInRooms = false;
-        for(Room room : rooms) {
-            if(room.usernameTaken(username))
-                usernameInRooms = true;
-        }
-        return lobby.usernameTaken(username) || usernameInRooms;
-    }
-
     public void newUser(Session user, String username) throws JSONException, IOException {
-        if(!usernameTaken(username)) {
+        if (!usernameTaken(username)) {
             lobby.addUser(user, username);
             user.getRemote().sendString(String.valueOf(
                     new JSONObject()
@@ -39,18 +28,71 @@ public class GameControls {
                             .put("result", "success")
                             .put("username", username)
             ));
-        }
-        else {
+        } else {
             user.getRemote().sendString(String.valueOf(
                     new JSONObject()
                             .put("action", "newUser")
-                            .put("result", "username taken")
+                            .put("result", "error")
                             .put("username", username)
             ));
         }
     }
 
-    public void addRoom(String name) {
+    private boolean usernameTaken(String username) {
+        boolean usernameInRooms = false;
+        for (Room room : rooms) {
+            if (room.usernameTaken(username))
+                usernameInRooms = true;
+        }
+        return lobby.usernameTaken(username) || usernameInRooms;
+    }
 
+    public void addRoom(String name, Session host) throws JSONException, IOException {
+        if (!roomNameTaken(name)) {
+            GameRoom newRoom = new GameRoom(name, host);
+            rooms.add(newRoom);
+            updateRoomList();
+            notifyUser(host, new JSONObject()
+                    .put("action", "newRoom")
+                    .put("result", "success"));
+        } else {
+            notifyUser(host, new JSONObject()
+                    .put("action", "newRoom")
+                    .put("result", "error"));
+        }
+
+    }
+
+    private boolean roomNameTaken(String name) {
+        for (Room room : rooms) {
+            if (room.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void notifyUser(Session user, JSONObject notification) throws IOException {
+        lobby.notifyUser(user, notification);
+        for (Room room : rooms) {
+            room.notifyUser(user, notification);
+        }
+    }
+
+    public void notifyAllUsers(JSONObject notification) throws IOException {
+        lobby.notifyAllUsers(notification);
+        for (Room room : rooms) {
+            room.notifyAllUsers(notification);
+        }
+    }
+
+    public void updateRoomList() throws JSONException, IOException {
+        List<String> roomNames = new LinkedList<>();
+        for (Room room : rooms) {
+            roomNames.add(room.getName());
+        }
+        notifyAllUsers(new JSONObject()
+                .put("action", "RoomList")
+                .put("rooms", roomNames));
     }
 }

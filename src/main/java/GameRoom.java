@@ -10,12 +10,19 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class GameRoom implements Room {
     private String name;
+    private Session host;
     private Map<Session, PlayerDetails> users;
 
 
-    public GameRoom(String name) {
+    public GameRoom(String name, Session host) {
         this.name = name;
+        this.host = host;
         this.users = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override

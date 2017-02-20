@@ -17,6 +17,11 @@ public class Lobby implements Room {
     }
 
     @Override
+    public String getName() {
+        return "Lobby";
+    }
+
+    @Override
     public boolean hasUser(Session user) {
         return users.keySet().contains(user);
     }

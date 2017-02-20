@@ -31,6 +31,9 @@ public class GameWebSocketHandler {
                 case "newUser":
                     controls.newUser(user, req.getUsername());
                     break;
+                case "newRoom":
+                    controls.addRoom(req.getRoomName(), user);
+                    break;
                 default:
                     System.out.println("Unsupported requested action '" + req.getAction() + "'");
                     break;

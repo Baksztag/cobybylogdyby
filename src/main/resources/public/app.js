@@ -15,6 +15,9 @@ socket.onmessage = function (msg) {
         case "newUser":
             newUserResult(data);
             break;
+        case "newRoom":
+            newRoomResult(data);
+            break;
     }
 };
 
@@ -79,7 +82,7 @@ function newUserResult(data) {
         toggle("rooms");
     }
     else {
-        id("loginError").innerHTML = "Nick " + data.username + " jest zajety."
+        id("loginError").innerHTML = "Nick " + data.username + " jest zajety.";
         id("username").value = "";
     }
 }
@@ -90,10 +93,20 @@ function addRoom(name) {
         obj.action = "newRoom";
         obj.roomName = name;
         socket.send(JSON.stringify(obj));
-        toggle("rooms");
-        toggle("gameLobby");
         id("roomName").innerHTML = name;
         id("playerList").innerHTML = "sdfgs";
         id("questionList").innerHTML = "asdfa";
     }
 };
+
+function newRoomResult(data) {
+    console.log(data.result);
+    if(data.result === "success") {
+        toggle("rooms");
+        toggle("gameLobby");
+    }
+    else {
+        id("newRoomError").innerHTML = "Nazwa pokoju " + data.roomName + " jest zajeta.";
+        id("newRoomName").value = "";
+    }
+}
