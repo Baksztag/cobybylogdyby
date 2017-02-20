@@ -3,11 +3,14 @@
  */
 public class Question {
     private final String question;
-    private final String answer;
+    private String answer;
 
 
-    public Question(String question, String answer) {
+    public Question(String question) {
         this.question = question;
+    }
+
+    public void setAnswer(String answer) {
         this.answer = answer;
     }
 

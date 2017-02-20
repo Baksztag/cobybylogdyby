@@ -30,6 +30,9 @@ socket.onmessage = function (msg) {
         case "listUsers":
             updateUserList(data);
             break;
+        case "questionList":
+            updateQuestionList(data);
+            break;
     }
 };
 
@@ -49,6 +52,10 @@ id("newUser").addEventListener("click", function () {
 
 id("leaveRoom").addEventListener("click", function () {
     leaveRoom();
+});
+
+id("addQuestion").addEventListener("click", function () {
+    addQuestion(id("newQuestion").value);
 });
 
 //HELPER FUNCTIONS
@@ -72,6 +79,10 @@ function initUI() {
     hide(id("gameLobbyContainer"));
     hide(id("gameContainer"));
     hide(id("resultsContainer"));
+
+    hide(id("startGame"));
+    hide(id("newQuestion"));
+    hide(id("addQuestion"));
 };
 
 function toggle(container) {
@@ -118,6 +129,17 @@ function newRoomResult(data) {
     if (data.result === "success") {
         toggle("rooms");
         toggle("gameLobby");
+        id("questionList").innerHTML = "";
+        id("startGame").disabled = false;
+        id("startGame").style.visibility = "visible";
+        id("newQuestion").disabled = false;
+        id("newQuestion").style.visibility = "visible";
+        id("addQuestion").disabled = false;
+        id("addQuestion").style.visibility = "visible";
+
+        // show(id("startGame"));
+        // show(id("newQuestion"));
+        // show(id("addQuestion"));
     }
     else {
         id("newRoomError").innerHTML = "Nazwa pokoju " + data.roomName + " jest juz zajeta.";
@@ -167,12 +189,32 @@ function leaveRoom() {
 function leaveRoomResult(data) {
     toggle("gameLobby");
     toggle("rooms");
-
+    hide(id("startGame"));
+    hide(id("newQuestion"));
+    hide(id("addQuestion"));
 }
 
 function updateUserList(data) {
     id("playerList").innerHTML = "";
     data.users.forEach(function (user) {
-        id("playerList").insertAdjacentHTML("afterBegin", "<li>" + user + "</li>");
+        id("playerList").insertAdjacentHTML("beforeEnd", "<li>" + user + "</li>");
     });
 }
+
+function addQuestion(question) {
+    if(question != "") {
+        var obj = {};
+        obj.action = "newQuestion";
+        obj.question = question;
+        obj.roomName = id("roomName").innerHTML.slice(7);
+        socket.send(JSON.stringify(obj));
+    }
+    id("newQuestion").value = "";
+}
+
+function updateQuestionList(data) {
+    id("questionList").innerHTML = "";
+    data.questionList.forEach(function (question) {
+        id("questionList").insertAdjacentHTML("beforeEnd", "<li>" + question + "</li>");
+    });
+};

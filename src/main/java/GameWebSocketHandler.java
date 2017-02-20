@@ -27,23 +27,26 @@ public class GameWebSocketHandler {
         Request req = gson.fromJson(message, Request.class);
 
         try {
-            if (req.getAction().equals("newUser")) {
-                controls.newUser(user, req.getUsername());
-            }
-            else if (req.getAction().equals("newRoom")) {
-                controls.addRoom(req.getRoomName(), user, req.getUsername());
-            }
-            else if (req.getAction().equals("join")) {
-                controls.joinRoom(user, req.getRoomName(), req.getUsername());
-            }
-            else if (req.getAction().equals("leave")) {
-                controls.leaveRoom(user, req.getUsername());
-            }
+            switch (req.getAction()) {
+                case "newUser":
+                    controls.newUser(user, req.getUsername());
+                    break;
+                case "newRoom":
+                    controls.addRoom(req.getRoomName(), user, req.getUsername());
+                    break;
+                case "join":
+                    controls.joinRoom(user, req.getRoomName(), req.getUsername());
+                    break;
+                case "leave":
+                    controls.leaveRoom(user, req.getUsername());
+                    break;
+                case "newQuestion":
+                    controls.addQuestion(req.getQuestion(), req.getRoomName());
+                    break;
+                default:
+                    System.out.println("Unsupported requested action '" + req.getAction() + "'");
 
-
-            else {
-                System.out.println("Unsupported requested action '" + req.getAction() + "'");
-
+                    break;
             }
         } catch (Exception e) {
             System.err.println(e);

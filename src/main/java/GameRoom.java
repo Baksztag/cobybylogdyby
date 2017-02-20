@@ -14,12 +14,14 @@ public class GameRoom implements Room {
     private String name;
     private Session host;
     private Map<Session, PlayerDetails> users;
+    private List<String> questions;
 
 
     public GameRoom(String name, Session host) {
         this.name = name;
         this.host = host;
-        this.users = new ConcurrentHashMap<Session, PlayerDetails>();
+        this.users = new ConcurrentHashMap<>();
+        this.questions = new LinkedList<>();
     }
 
     @Override
@@ -98,5 +100,13 @@ public class GameRoom implements Room {
             userList.add(users.get(user).username);
         }
         return userList;
+    }
+
+    public void addQuestion(String question) {
+        this.questions.add(question);
+    }
+
+    public List<String> getQuestions() {
+        return questions;
     }
 }

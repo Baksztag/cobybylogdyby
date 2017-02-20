@@ -107,6 +107,7 @@ public class GameControls {
                     .put("username", username)
             );
             updateUserList(roomToJoin);
+            updateQuestionList(roomToJoin);
         }
     }
 
@@ -142,6 +143,28 @@ public class GameControls {
         room.notifyAllUsers(new JSONObject()
                 .put("action", "listUsers")
                 .put("users", room.getUsers())
+        );
+    }
+
+    public void addQuestion(String question, String roomName) throws IOException, JSONException {
+        GameRoom room = null;
+        for (GameRoom gameRoom : rooms) {
+            if (gameRoom.getName().equals(roomName)) {
+                room = gameRoom;
+            }
+        }
+        System.out.println(room);
+        if (room != null) {
+            room.addQuestion(question);
+            updateQuestionList(room);
+            System.out.println(room.getQuestions());
+        }
+    }
+
+    private void updateQuestionList(GameRoom room) throws JSONException, IOException {
+        room.notifyAllUsers(new JSONObject()
+                .put("action", "questionList")
+                .put("questionList", room.getQuestions())
         );
     }
 

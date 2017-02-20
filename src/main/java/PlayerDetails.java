@@ -13,4 +13,12 @@ public class PlayerDetails {
         this.username = username;
         questions = new LinkedList<Question>();
     }
+
+    public void addQuestion(String question) {
+        this.questions.add(new Question(question));
+    }
+
+    public void addAnswer(String answer) {
+        this.questions.get(this.questions.size() -1).setAnswer(answer);
+    }
 }
