@@ -207,10 +207,7 @@ public class GameControls {
         room.newAnswer(username, answer);
         if (room.endRound()) {
             if (room.endGame()) {
-                room.notifyAllUsers(new JSONObject()
-                        .put("action", "endGame")
-                        .put("result", "koniec xD")
-                );
+                endGame(room);
             }
             else {
                 room.notifyAllUsers(new JSONObject()
@@ -228,6 +225,17 @@ public class GameControls {
             );
         }
     }
+
+    private void endGame(GameRoom room) throws JSONException, IOException {
+        room.notifyAllUsers(new JSONObject()
+                .put("action", "endGame")
+        );
+        room.sendResults();
+        room.sendAllResults();
+        lobby.addUsers(room.removeAllUsers());
+        rooms.remove(room);
+    }
+
     public void notifyUser(Session user, JSONObject notification) throws IOException {
         lobby.notifyUser(user, notification);
         for (Room room : rooms) {

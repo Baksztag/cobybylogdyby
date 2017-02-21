@@ -20,7 +20,6 @@ public class QuestionContainer {
 
     public void addQuestion(int playerIndex, String question) {
         this.questions[playerIndex] = new Question(question);
-        System.out.println(questions);
     }
 
     public void addAnswer(int playerIndex, String answer) {
@@ -29,6 +28,10 @@ public class QuestionContainer {
 
     public String getQuestion(int playerIndex) {
         return questions[playerIndex].getQuestion();
+    }
+
+    public Question getQuestionPair(int playerIndex) {
+        return questions[playerIndex];
     }
 
     public boolean questionsComplete() {
@@ -51,7 +54,7 @@ public class QuestionContainer {
 
     public void switchAnswers() {
         String next = questions[0].getAnswer();
-        String tmp = null;
+        String tmp;
         for(int i = 0; i < questions.length - 1; i++) {
             tmp = questions[i + 1].getAnswer();
             questions[i + 1].setAnswer(next);

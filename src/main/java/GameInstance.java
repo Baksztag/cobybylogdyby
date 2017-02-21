@@ -1,4 +1,8 @@
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +63,14 @@ public class GameInstance {
             return true;
         }
         return false;
+    }
+
+    public List<JSONObject> getPlayerQuestions(String player) throws JSONException {
+        List<JSONObject> questions = new LinkedList<>();
+        for (int i = 0; i < this.questions.length; i++) {
+            questions.add(this.questions[i].getQuestionPair(playerIndexMap.get(player)).toJSON());
+        }
+        return questions;
     }
 
     public int getRound() {

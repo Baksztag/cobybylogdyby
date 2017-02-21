@@ -1,3 +1,6 @@
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by jakub.a.kret@gmail.com on 2017-02-20.
  */
@@ -10,12 +13,8 @@ public class Question {
         this.question = question;
     }
 
-    @Override
-    public String toString() {
-        return "Question{" +
-                "question='" + question + '\'' +
-                ", answer='" + answer + '\'' +
-                '}';
+    public JSONObject toJSON() throws JSONException {
+        return new JSONObject().put("question", question).put("answer", answer);
     }
 
     public void setAnswer(String answer) {

@@ -42,6 +42,15 @@ socket.onmessage = function (msg) {
         case "acceptAnswer":
             acceptAnswerResult(data);
             break;
+        case "endGame":
+            endGame(data);
+            break;
+        case "listResults":
+            listResults(data);
+            break;
+        case "listAllResults":
+            listAllResults(data);
+            break;
     }
 };
 
@@ -77,6 +86,10 @@ id("acceptQuestion").addEventListener("click", function () {
 
 id("acceptAnswer").addEventListener("click", function () {
     acceptAnswer(id("newAnswer").value);
+});
+
+id("leaveGame").addEventListener("click", function () {
+    leaveGame();
 });
 
 //HELPER FUNCTIONS
@@ -315,5 +328,47 @@ function acceptAnswerResult(data) {
         id("messages").innerHTML = "";
         show(id("question"));
         id("questionInfo").innerHTML = data.question;
+    }
+}
+
+function endGame() {
+    toggle("game");
+    toggle("results");
+}
+
+function listResults(data) {
+    id("resultList").innerHTML = "";
+    for (var i = 0; i < data.result.length; i++) {
+        id("resultList").insertAdjacentHTML("beforeEnd",
+            "<li>" +
+            "<span class='questionPosition'>" +
+            data.result[i].question +
+            "</span>" +
+            "<span class='answerPosition'>" +
+            data.result[i].answer +
+            "</span>" +
+            "</li>");
+    }
+}
+
+function leaveGame() {
+    toggle("results");
+    toggle("rooms");
+    id("resultList").innerHTML = "";
+    id("allResultsList").innerHTML = "";
+}
+
+function listAllResults(data) {
+    id("allResultsList").innerHTML = "";
+    for (var i = 0; i < data.result.length; i++) {
+        id("allResultsList").insertAdjacentHTML("beforeEnd",
+            "<li>" +
+            "<span class='questionPosition'>" +
+            data.result[i].question +
+            "</span>" +
+            "<span class='answerPosition'>" +
+            data.result[i].answer +
+            "</span>" +
+            "</li>");
     }
 }

@@ -21,6 +21,20 @@
     color: gray;
 }
 
-.question, .answer {
+#question, #answer {
     position: absolute;
+}
+
+ul {
+    list-style: none;
+}
+
+.questionPosition {
+    display: block;
+    font-weight: bold;
+}
+
+.answerPosition {
+    display: block;
+    margin-bottom: 10px;
 }

@@ -155,4 +155,25 @@ public class GameRoom implements Room {
     public boolean endGame() {
         return this.game.endGame();
     }
+
+    public void sendResults() throws IOException, JSONException {
+        for (Session player : users.keySet()) {
+            notifyUser(player, new JSONObject()
+                    .put("action", "listResults")
+                    .put("result", game.getPlayerQuestions(users.get(player)))
+            );
+        }
+    }
+
+    public void sendAllResults() throws JSONException, IOException {
+        List<JSONObject> objects = new LinkedList<>();
+        for (Session player : users.keySet()) {
+            objects.addAll(game.getPlayerQuestions(users.get(player)));
+        }
+        notifyAllUsers(new JSONObject()
+                .put("action", "listAllResults")
+                .put("result", objects)
+        );
+    }
+
 }
