@@ -16,7 +16,7 @@ public class GameControls {
 
 
     public GameControls() {
-        this.rooms = new LinkedList<GameRoom>();
+        this.rooms = new LinkedList<>();
         this.lobby = new Lobby();
     }
 
