@@ -36,6 +36,7 @@
             <span id="roomName" class="banner"></span>
             <button id="leaveRoom" class="btn btn-primary">Opusc pokoj</button>
             <button id="startGame" class="btn btn-danger">Rozpocznij gre</button>
+            <span id="startGameError" class="info info-error"></span>
             <span class="info">Gracze:</span>
             <ul id="playerList"></ul>
             <span class="info">Pytania:</span>
@@ -49,9 +50,12 @@
 <div id="gameContainer" class="container">
     <div class="row">
         <div class="col-sm-8">
+            <span id="messages" class="info"></span>
+
             <div id="question">
-                <span id="questionInfo" class="info">Co by bylo gdyby...</span>
+                <span id="questionInfo" class="info"></span>
                 <input id="nextQuestion" placeholder="Dokoncz pytanie">
+                <span class="info">?</span>
                 <button id="acceptQuestion" class="btn btn-success">OK</button>
             </div>
 
@@ -61,7 +65,6 @@
                 <input id="newAnswer" placeholder="Twoja odpowiedz">
                 <button id="acceptAnswer" class="btn btn-success">OK</button>
             </div>
-
         </div>
     </div>
 </div>

@@ -43,9 +43,17 @@ public class GameWebSocketHandler {
                 case "newQuestion":
                     controls.addQuestion(req.getQuestion(), req.getRoomName());
                     break;
+                case "startGame":
+                    controls.startGame(req.getRoomName());
+                    break;
+                case "acceptQuestion":
+                    controls.newQuestion(user, req.getQuestion(), req.getUsername());
+                    break;
+                case "acceptAnswer":
+                    controls.newAnswer(user, req.getAnswer(), req.getUsername());
+                    break;
                 default:
                     System.out.println("Unsupported requested action '" + req.getAction() + "'");
-
                     break;
             }
         } catch (Exception e) {

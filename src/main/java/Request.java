@@ -6,6 +6,7 @@ public class Request {
     private String roomName;
     private String username;
     private String question;
+    private String answer;
 
 
     @Override
@@ -15,6 +16,7 @@ public class Request {
                 ", roomName='" + roomName + '\'' +
                 ", username='" + username + '\'' +
                 ", question='" + question + '\'' +
+                ", answer='" + answer + '\'' +
                 '}';
     }
 
@@ -48,5 +50,13 @@ public class Request {
 
     public void setQuestion(String question) {
         this.question = question;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

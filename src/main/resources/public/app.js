@@ -33,6 +33,15 @@ socket.onmessage = function (msg) {
         case "questionList":
             updateQuestionList(data);
             break;
+        case "startGame":
+            startGameResult(data);
+            break;
+        case "acceptQuestion":
+            acceptQuestionResult(data);
+            break;
+        case "acceptAnswer":
+            acceptAnswerResult(data);
+            break;
     }
 };
 
@@ -58,6 +67,18 @@ id("addQuestion").addEventListener("click", function () {
     addQuestion(id("newQuestion").value);
 });
 
+id("startGame").addEventListener("click", function () {
+    startGame();
+});
+
+id("acceptQuestion").addEventListener("click", function () {
+    acceptQuestion(id("nextQuestion").value);
+});
+
+id("acceptAnswer").addEventListener("click", function () {
+    acceptAnswer(id("newAnswer").value);
+});
+
 //HELPER FUNCTIONS
 function id(id) {
     return document.getElementById(id);
@@ -73,6 +94,24 @@ function hide(element) {
     element.setAttribute("disabled", "true");
 }
 
+function showGameLobbyElements() {
+    id("startGame").disabled = false;
+    id("startGame").style.visibility = "visible";
+    id("newQuestion").disabled = false;
+    id("newQuestion").style.visibility = "visible";
+    id("addQuestion").disabled = false;
+    id("addQuestion").style.visibility = "visible";
+}
+
+function hideGameLobbyElements() {
+    id("startGame").disabled = true;
+    id("startGame").style.visibility = "hidden";
+    id("newQuestion").disabled = true;
+    id("newQuestion").style.visibility = "hidden";
+    id("addQuestion").disabled = true;
+    id("addQuestion").style.visibility = "hidden";
+}
+
 function initUI() {
     show(id("loginContainer"))
     hide(id("roomsContainer"));
@@ -83,7 +122,7 @@ function initUI() {
     hide(id("startGame"));
     hide(id("newQuestion"));
     hide(id("addQuestion"));
-};
+}
 
 function toggle(container) {
     if (id(container + "Container").getAttribute("disabled") === "true") {
@@ -91,7 +130,7 @@ function toggle(container) {
     } else {
         hide(id(container + "Container"));
     }
-};
+}
 
 function newUser(username) {
     if (username != "") {
@@ -116,26 +155,21 @@ function newUserResult(data) {
 
 function addRoom(name) {
     if (name != "") {
-        var obj = new Object();
+        var obj = {};
         obj.action = "newRoom";
         obj.roomName = name;
         obj.username = username;
         socket.send(JSON.stringify(obj));
         id("roomName").innerHTML = "Pokoj: " + name;
     }
-};
+}
 
 function newRoomResult(data) {
     if (data.result === "success") {
         toggle("rooms");
         toggle("gameLobby");
         id("questionList").innerHTML = "";
-        id("startGame").disabled = false;
-        id("startGame").style.visibility = "visible";
-        id("newQuestion").disabled = false;
-        id("newQuestion").style.visibility = "visible";
-        id("addQuestion").disabled = false;
-        id("addQuestion").style.visibility = "visible";
+        showGameLobbyElements()
 
         // show(id("startGame"));
         // show(id("newQuestion"));
@@ -174,9 +208,7 @@ function joinRoomResult(data) {
     toggle("rooms");
     toggle("gameLobby");
     id("roomName").innerHTML = "Pokoj: " + data.roomName;
-    hide(id("startGame"));
-    hide(id("newQuestion"));
-    hide(id("addQuestion"));
+    hideGameLobbyElements();
 }
 
 function leaveRoom() {
@@ -189,9 +221,7 @@ function leaveRoom() {
 function leaveRoomResult(data) {
     toggle("gameLobby");
     toggle("rooms");
-    hide(id("startGame"));
-    hide(id("newQuestion"));
-    hide(id("addQuestion"));
+    hideGameLobbyElements()
 }
 
 function updateUserList(data) {
@@ -217,4 +247,73 @@ function updateQuestionList(data) {
     data.questionList.forEach(function (question) {
         id("questionList").insertAdjacentHTML("beforeEnd", "<li>" + question + "</li>");
     });
-};
+}
+
+function startGame() {
+    var o = {};
+    o.action = "startGame";
+    o.username = username;
+    o.roomName = id("roomName").innerHTML.slice(7);
+    socket.send(JSON.stringify(o));
+}
+
+function startGameResult(data) {
+    if (data.result === "failure") {
+        id("startGameError").innerHTML = data.details;
+    }
+    else {
+        toggle("gameLobby");
+        toggle("game");
+        hideGameLobbyElements();
+        hide(id("answer"));
+        show(id("question"));
+        id("questionInfo").innerHTML = data.question;
+    }
+}
+
+function acceptQuestion(question) {
+    if (question != "") {
+        var o = {};
+        o.action = "acceptQuestion";
+        o.question = question;
+        o.username = username;
+        socket.send(JSON.stringify(o));
+        hide(id("question"));
+        id("nextQuestion").value = "";
+    }
+
+}
+
+function acceptQuestionResult(data) {
+    if (data.result === "failure") {
+        id("messages").innerHTML = data.message;
+    }
+    else {
+        id("messages").innerHTML = "";
+        show(id("answer"));
+        id("previousQuestion").innerHTML = data.question;
+    }
+}
+
+function acceptAnswer(answer) {
+    if (answer != "") {
+        var o = {};
+        o.action = "acceptAnswer";
+        o.answer = answer;
+        o.username = username;
+        socket.send(JSON.stringify(o));
+        hide(id("answer"));
+        id("newAnswer").value = "";
+    }
+}
+
+function acceptAnswerResult(data) {
+    if (data.result === "failure") {
+        id("messages").innerHTML = data.message;
+    }
+    else {
+        id("messages").innerHTML = "";
+        show(id("question"));
+        id("questionInfo").innerHTML = data.question;
+    }
+}

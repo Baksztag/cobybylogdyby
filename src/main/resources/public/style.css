@@ -15,3 +15,12 @@
 .info-error {
     color: red;
 }
+
+.old {
+    display: block;
+    color: gray;
+}
+
+.question, .answer {
+    position: absolute;
+}

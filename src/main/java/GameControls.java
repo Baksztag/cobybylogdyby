@@ -82,9 +82,11 @@ public class GameControls {
     }
 
     public void updateRoomList() throws JSONException, IOException {
-        List<String> roomNames = new LinkedList<String>();
-        for (Room room : rooms) {
-            roomNames.add(room.getName());
+        List<String> roomNames = new LinkedList<>();
+        for (GameRoom room : rooms) {
+            if(!room.gameInProgress()) {
+                roomNames.add(room.getName());
+            }
         }
         notifyAllUsers(new JSONObject()
                 .put("action", "roomList")
@@ -92,12 +94,7 @@ public class GameControls {
     }
 
     public void joinRoom(Session user, String roomName, String username) throws JSONException, IOException {
-        GameRoom roomToJoin = null;
-        for (GameRoom room : rooms) {
-            if (room.getName().equals(roomName)) {
-                roomToJoin = room;
-            }
-        }
+        GameRoom roomToJoin = getRoomByName(roomName);
         if (roomToJoin != null) {
             lobby.removeUser(user);
             roomToJoin.addUser(user, username);
@@ -147,17 +144,10 @@ public class GameControls {
     }
 
     public void addQuestion(String question, String roomName) throws IOException, JSONException {
-        GameRoom room = null;
-        for (GameRoom gameRoom : rooms) {
-            if (gameRoom.getName().equals(roomName)) {
-                room = gameRoom;
-            }
-        }
-        System.out.println(room);
+        GameRoom room = getRoomByName(roomName);
         if (room != null) {
             room.addQuestion(question);
             updateQuestionList(room);
-            System.out.println(room.getQuestions());
         }
     }
 
@@ -168,6 +158,76 @@ public class GameControls {
         );
     }
 
+    public void startGame(String roomName) throws JSONException, IOException {
+        GameRoom room = getRoomByName(roomName);
+        if (room != null) {
+            if (room.getUsers().size() <= 1) {
+                notifyUser(room.getHost(), new JSONObject()
+                        .put("action", "startGame")
+                        .put("result", "failure")
+                        .put("details", "Nie mozesz grac sam")
+                );
+            }
+            else if (room.getQuestions().size() == 0) {
+                notifyUser(room.getHost(), new JSONObject()
+                        .put("action", "startGame")
+                        .put("result", "failure")
+                        .put("details", "Musisz dodac chociaz jedno pytanie")
+                );
+            }
+            else {
+                room.startGame();
+                room.notifyAllUsers(new JSONObject()
+                        .put("action", "startGame")
+                        .put("result", "success")
+                        .put("question", room.getQuestions().get(0))
+                );
+                updateRoomList();
+            }
+        }
+    }
+
+    public void newQuestion(Session user, String question, String username) throws IOException, JSONException {
+        GameRoom room = getRoomByUser(user);
+        room.newQuestion(username, room.getQuestions().get(room.getRound()) + " " + question + "?");
+        if (room.endAsking()) {
+            room.sendPreviousQuestions();
+        }
+        else {
+            room.notifyUser(user, new JSONObject()
+                    .put("action", "acceptQuestion")
+                    .put("result", "failure")
+                    .put("message", "Zaczekaj na pozostalych graczy...")
+            );
+        }
+    }
+
+    public void newAnswer(Session user, String answer, String username) throws JSONException, IOException {
+        GameRoom room = getRoomByUser(user);
+        room.newAnswer(username, answer);
+        if (room.endRound()) {
+            if (room.endGame()) {
+                room.notifyAllUsers(new JSONObject()
+                        .put("action", "endGame")
+                        .put("result", "koniec xD")
+                );
+            }
+            else {
+                room.notifyAllUsers(new JSONObject()
+                        .put("action", "acceptAnswer")
+                        .put("result", "success")
+                        .put("question", room.getQuestions().get(room.getRound()))
+                );
+            }
+        }
+        else {
+            room.notifyUser(user, new JSONObject()
+                    .put("action", "acceptQuestion")
+                    .put("result", "failure")
+                    .put("message", "Zaczekaj na pozostalych graczy...")
+            );
+        }
+    }
     public void notifyUser(Session user, JSONObject notification) throws IOException {
         lobby.notifyUser(user, notification);
         for (Room room : rooms) {
@@ -180,5 +240,25 @@ public class GameControls {
         for (Room room : rooms) {
             room.notifyAllUsers(notification);
         }
+    }
+
+    private GameRoom getRoomByName(String name) {
+        GameRoom room = null;
+        for (GameRoom gameRoom : rooms) {
+            if (gameRoom.getName().equals(name)) {
+                room = gameRoom;
+            }
+        }
+        return room;
+    }
+
+    private GameRoom getRoomByUser(Session user) {
+        GameRoom room = null;
+        for (GameRoom gameRoom : rooms) {
+            if (gameRoom.hasUser(user)) {
+                room = gameRoom;
+            }
+        }
+        return room;
     }
 }

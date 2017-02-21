@@ -31,14 +31,37 @@ public class GameInstance {
         this.questions[this.round].addAnswer(this.playerIndexMap.get(playerName), answer);
     }
 
+    public String getQuestion(int round, String username) {
+        return questions[round].getQuestion(playerIndexMap.get(username));
+    }
+
+    public boolean endAsking() {
+        if (this.questions[round].questionsComplete()) {
+            System.out.println("All questions asked");
+            return true;
+        }
+        return false;
+    }
+
     public boolean endRound() {
         if (this.questions[round].isComplete()) {
+            System.out.println("Round complete");
             questions[round].switchAnswers();
             round++;
             return true;
         }
-        else {
-            return false;
+        return false;
+    }
+
+    public boolean endGame() {
+        if (round == questions.length) {
+            System.out.println("Game complete");
+            return true;
         }
+        return false;
+    }
+
+    public int getRound() {
+        return round;
     }
 }

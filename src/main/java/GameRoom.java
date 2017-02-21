@@ -1,4 +1,5 @@
 import org.eclipse.jetty.websocket.api.Session;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -13,8 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GameRoom implements Room {
     private String name;
     private Session host;
-    private Map<Session, PlayerDetails> users;
+    private Map<Session, String> users;
     private List<String> questions;
+    private GameInstance game;
 
 
     public GameRoom(String name, Session host) {
@@ -22,6 +24,7 @@ public class GameRoom implements Room {
         this.host = host;
         this.users = new ConcurrentHashMap<>();
         this.questions = new LinkedList<>();
+        this.game = null;
     }
 
     @Override
@@ -49,8 +52,8 @@ public class GameRoom implements Room {
 
     @Override
     public boolean usernameTaken(String username) {
-        for(PlayerDetails player : users.values()) {
-            if(player.username.equals(username)) {
+        for (String user : users.values()) {
+            if (user.equals(username)) {
                 return true;
             }
         }
@@ -82,13 +85,13 @@ public class GameRoom implements Room {
 
     @Override
     public void addUser(Session user, String name) {
-        users.put(user, new PlayerDetails(name));
+        users.put(user, name);
     }
 
     public Map<Session, String> removeAllUsers() {
         Map<Session, String> userList = new ConcurrentHashMap<>();
         for (Session user : users.keySet()) {
-            userList.put(user, users.get(user).username);
+            userList.put(user, users.get(user));
             users.remove(user);
         }
         return userList;
@@ -97,7 +100,7 @@ public class GameRoom implements Room {
     public List<String> getUsers() {
         List<String> userList = new LinkedList<>();
         for (Session user : users.keySet()) {
-            userList.add(users.get(user).username);
+            userList.add(users.get(user));
         }
         return userList;
     }
@@ -108,5 +111,48 @@ public class GameRoom implements Room {
 
     public List<String> getQuestions() {
         return questions;
+    }
+
+    public void newQuestion(String player, String question) {
+        this.game.addQuestion(player, question);
+    }
+
+    public void newAnswer(String player, String answer) {
+        this.game.addAnswer(player, answer);
+    }
+
+    public boolean endAsking() {
+        return this.game.endAsking();
+    }
+
+    public boolean endRound() {
+        return this.game.endRound();
+    }
+
+    public void sendPreviousQuestions() throws IOException, JSONException {
+        for (Session user : users.keySet()) {
+            notifyUser(user, new JSONObject()
+                    .put("action", "acceptQuestion")
+                    .put("result", "success")
+                    .put("question", game.getQuestion(getRound(), users.get(user)))
+            );
+        }
+    }
+
+    public int getRound() {
+        return this.game.getRound();
+    }
+
+    public void startGame() {
+        List<String> players = new LinkedList<>(this.users.values());
+        this.game = new GameInstance(players, questions.size());
+    }
+
+    public boolean gameInProgress() {
+        return game != null;
+    }
+
+    public boolean endGame() {
+        return this.game.endGame();
     }
 }

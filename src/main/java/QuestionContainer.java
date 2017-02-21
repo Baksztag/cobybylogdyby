@@ -20,10 +20,24 @@ public class QuestionContainer {
 
     public void addQuestion(int playerIndex, String question) {
         this.questions[playerIndex] = new Question(question);
+        System.out.println(questions);
     }
 
     public void addAnswer(int playerIndex, String answer) {
         this.questions[playerIndex].setAnswer(answer);
+    }
+
+    public String getQuestion(int playerIndex) {
+        return questions[playerIndex].getQuestion();
+    }
+
+    public boolean questionsComplete() {
+        for (int i = 0; i < questions.length; i++) {
+            if (questions[i] == null || questions[i].getQuestion() == null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isComplete() {
