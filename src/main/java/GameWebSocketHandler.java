@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -52,6 +53,12 @@ public class GameWebSocketHandler {
                 case "acceptAnswer":
                     controls.newAnswer(user, req.getAnswer(), req.getUsername());
                     break;
+                case "ping":
+                    controls.pong(user);
+                    break;
+                case "close":
+                    controls.close(user, req.getUsername());
+                    user.close();
                 default:
                     System.out.println("Unsupported requested action '" + req.getAction() + "'");
                     break;
@@ -59,5 +66,12 @@ public class GameWebSocketHandler {
         } catch (Exception e) {
             System.err.println(e);
         }
+    }
+
+    @OnWebSocketClose
+    public void onClose(int statusCode, String reason) {
+        System.out.println("closed");
+        System.out.println(statusCode);
+        System.out.println(reason);
     }
 }

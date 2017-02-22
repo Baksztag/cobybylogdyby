@@ -3,6 +3,7 @@
  */
 var socket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/game/");
 var username = "";
+var lastMessageSent = new Date().getTime();
 
 socket.onopen = function () {
     initUI();
@@ -51,12 +52,13 @@ socket.onmessage = function (msg) {
         case "listAllResults":
             listAllResults(data);
             break;
+        case "abort":
+            abortGame();
+            break;
     }
 };
 
-socket.onclose = function () {
-
-};
+// socket.onclose = closeConnection();
 
 //EVENT HANDLERS
 id("addRoom").addEventListener("click", function () {
@@ -126,7 +128,7 @@ function hideGameLobbyElements() {
 }
 
 function initUI() {
-    show(id("loginContainer"))
+    show(id("loginContainer"));
     hide(id("roomsContainer"));
     hide(id("gameLobbyContainer"));
     hide(id("gameContainer"));
@@ -197,7 +199,7 @@ function newRoomResult(data) {
 function updateRoomList(data) {
     id("roomList").innerHTML = "";
     for (var i = 0; i < data.rooms.length; i++) {
-        id("roomList").insertAdjacentHTML("afterbegin", "<button id='room-" + data.rooms[i] + "' class='btn btn-info'>" + data.rooms[i] + "</button>");
+        id("roomList").insertAdjacentHTML("beforeEnd", "<li><button id='room-" + data.rooms[i] + "' class='btn btn-info'>" + data.rooms[i] + "</button></li>");
     }
 
     var rooms = id("roomList").getElementsByTagName("button");
@@ -240,12 +242,12 @@ function leaveRoomResult(data) {
 function updateUserList(data) {
     id("playerList").innerHTML = "";
     data.users.forEach(function (user) {
-        id("playerList").insertAdjacentHTML("beforeEnd", "<li>" + user + "</li>");
+        id("playerList").insertAdjacentHTML("afterBegin", "<li>" + user + "</li>");
     });
 }
 
 function addQuestion(question) {
-    if(question != "") {
+    if (question != "") {
         var obj = {};
         obj.action = "newQuestion";
         obj.question = question;
@@ -352,10 +354,12 @@ function listResults(data) {
 }
 
 function leaveGame() {
+    console.log("leaveStart");
     toggle("results");
     toggle("rooms");
     id("resultList").innerHTML = "";
     id("allResultsList").innerHTML = "";
+    console.log("leaveEnd");
 }
 
 function listAllResults(data) {
@@ -372,3 +376,35 @@ function listAllResults(data) {
             "</li>");
     }
 }
+
+function ping() {
+    var o = {};
+    o.action = "ping";
+    socket.send(JSON.stringify(o));
+}
+
+// function closeConnection() {
+//     var o = {};
+//     o.action = "close";
+//     o.username = username;
+//     socket.send(JSON.stringify(o));
+// }
+
+function abortGame() {
+    toggle("game");
+    toggle("rooms");
+    id("resultList").innerHTML = "";
+    id("allResultsList").innerHTML = "";
+}
+
+setInterval(
+    function () {
+        var interval = 30 * 1000;
+        var currentTime = new Date().getTime();
+        if (lastMessageSent < currentTime - interval) {
+            ping();
+            lastMessageSent = currentTime;
+        }
+    },
+    1000
+);

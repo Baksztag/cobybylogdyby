@@ -2,38 +2,44 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Co by bylo gdyby...</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="center-horizontal">
 <div id="loginContainer" class="container">
     <div class="row">
-        <div class="col-sm-8">
-            <span class="banner">Wybierz nick:</span>
-            <input type="text" id="username" placeholder="Moj nick">
-            <span id="loginError" class="info info-error"></span>
-            <button id="newUser" class="btn btn-primary">OK</button>
+        <div class="col-sm-12">
+            <!--<div class="center-horizontal">-->
+                <span class="banner">Wybierz nick:</span>
+                <input type="text" id="username" placeholder="Moj nick">
+                <span id="loginError" class="info info-error"></span>
+                <button id="newUser" class="btn btn-primary">OK</button>
+            <!--</div>-->
+            <!--<input type="text" id="username" placeholder="Moj nick">-->
+            <!--<span id="loginError" class="info info-error"></span>-->
+            <!--<button id="newUser" class="btn btn-primary">OK</button>-->
         </div>
     </div>
 </div>
 <div id="roomsContainer" class="container">
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-12">
             <span class="banner">Utworz nowy pokoj...</span>
             <input id="newRoomName" placeholder="Nazwa">
             <button id="addRoom" class="btn btn-primary">Utworz pokoj</button>
             <span id="newRoomError" class="info info-error"></span>
             <span class="banner">...lub dolacz do istniejacego:</span>
-            <div id="roomList"></div>
+            <ul id="roomList" class="left-horizontal"></ul>
         </div>
     </div>
 </div>
 
 <div id="gameLobbyContainer" class="container">
     <div class="row">
-        <div class="col-sm-8">
-            <span id="roomName" class="banner"></span>
+        <div class="col-sm-12 left-horizontal">
+            <span id="roomName" class="banner header"></span>
             <button id="leaveRoom" class="btn btn-primary">Opusc pokoj</button>
             <button id="startGame" class="btn btn-danger">Rozpocznij gre</button>
             <span id="startGameError" class="info info-error"></span>
@@ -49,7 +55,7 @@
 
 <div id="gameContainer" class="container">
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-12 left-horizontal">
             <span id="messages" class="info"></span>
 
             <div id="question">
@@ -61,7 +67,7 @@
 
             <div id="answer">
                 <span class="info">Twoje poprzednie pytanie:</span>
-                <span id="previousQuestion" class="old"></span>
+                <span id="previousQuestion" class="old info"></span>
                 <input id="newAnswer" placeholder="Twoja odpowiedz">
                 <button id="acceptAnswer" class="btn btn-success">OK</button>
             </div>
@@ -71,7 +77,7 @@
 
 <div id="resultsContainer" class="container">
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-12 left-horizontal">
             <span class="banner">Gra zakonczona!</span>
             <span class="banner">Twoje wyniki:</span>
             <ul id="resultList"></ul>

@@ -236,6 +236,35 @@ public class GameControls {
         rooms.remove(room);
     }
 
+    public void pong(Session user) throws IOException, JSONException {
+        notifyUser(user, new JSONObject().put("action", "pong"));
+    }
+
+    public void close(Session user, String username) throws IOException, JSONException {
+        GameRoom room = getRoomByUser(user);
+        if (room != null) {
+            if (!room.gameInProgress()) {
+                leaveRoom(user, username);
+            }
+            else {
+                abortGame(user);
+            }
+        }
+        else if (lobby.hasUser(user)) {
+            lobby.removeUser(user);
+        }
+    }
+
+    private void abortGame(Session user) throws JSONException, IOException {
+        GameRoom room = getRoomByUser(user);
+        room.notifyAllUsers(new JSONObject()
+                .put("action", "abort")
+        );
+        lobby.addUsers(room.removeAllUsers());
+        rooms.remove(room);
+        updateRoomList();
+    }
+
     public void notifyUser(Session user, JSONObject notification) throws IOException {
         lobby.notifyUser(user, notification);
         for (Room room : rooms) {

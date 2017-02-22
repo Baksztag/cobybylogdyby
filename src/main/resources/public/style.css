@@ -1,19 +1,45 @@
+html, body {
+    max-width: 100%;
+    max-height: 100%;
+    overflow-x: hidden;
+    background-color: #011f4b;
+    color: #b3cde0;
+}
+
+div {
+}
+
 .banner {
     display: block;
-    font-size: xx-large;
+    font-size: 2em;
 }
 
 .container {
+    width: 100%;
+    /*overflow-x: hidden;*/
     position: absolute;
 }
 
 .info {
     display: block;
     font-weight: bold;
+    font-size: 1.5em;
 }
 
 .info-error {
     color: red;
+}
+
+input {
+    font-size: 2em;
+    border: none;
+    border-left: solid #6497b1 0.25vw;
+    border-bottom: solid #6497b1 0.5vh;
+    background-color: #005b96;
+}
+
+.btn {
+    margin-top: 1vh;
 }
 
 .old {
@@ -32,9 +58,42 @@ ul {
 .questionPosition {
     display: block;
     font-weight: bold;
+    font-size: 1.5em;
 }
 
 .answerPosition {
     display: block;
     margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.center-horizontal {
+    text-align: center;
+    margin: auto;
+}
+
+.left-horizontal {
+    text-align: left;
+    margin: auto;
+}
+
+.center-vertical {
+    display: table;
+}
+
+#loginContainer, #gameContainer {
+    margin-top: 10%;
+}
+
+#roomList > button {
+    display: inline-block;
+}
+
+.header {
+    border-bottom: solid #03396c 0.5vh;
+}
+
+#questionList, #playerList {
+    border-bottom: solid #03396c 0.5vh;
+    font-size: 1.5em;
 }
