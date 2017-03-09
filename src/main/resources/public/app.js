@@ -56,9 +56,6 @@ socket.onmessage = function (msg) {
         case "listAllResults":
             listAllResults(data);
             break;
-        // case "abort":
-        //     abortGame();
-        //     break;
         case "ping":
             pong();
             break;
