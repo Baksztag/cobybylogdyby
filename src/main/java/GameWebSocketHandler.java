@@ -4,17 +4,21 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.Date;
 
 /**
  * Created by jakub.a.kret@gmail.com on 2017-02-18.
  */
 @WebSocket
 public class GameWebSocketHandler {
-    private GameControls controls = new GameControls();
+    //    private GameControls controls = new GameControls();
+    private UserManager users = new UserManager();
+    private GameManager games = new GameManager(users);
+    private ResponseManager response = new ResponseManager(users, games);
+    private ActionManager action = new ActionManager(users, games, response);
+    private ConnectionManager connections = new ConnectionManager(users, action, response);
+
 
     @OnWebSocketConnect
     public void onConnect(Session user) {
@@ -30,48 +34,45 @@ public class GameWebSocketHandler {
         try {
             switch (req.getAction()) {
                 case "newUser":
-                    controls.newUser(user, req.getUsername());
+                    action.newUser(req.getUsername(), user);
+                    connections.newUser(req.getUsername(), new Date().getTime());
                     break;
                 case "newRoom":
-                    controls.addRoom(req.getRoomName(), user, req.getUsername());
+                    action.newRoom(req.getUsername(), req.getRoomName(), user);
                     break;
                 case "join":
-                    controls.joinRoom(user, req.getRoomName(), req.getUsername());
+                    action.joinRoom(req.getUsername(), req.getRoomName(), user);
                     break;
                 case "leave":
-                    controls.leaveRoom(user, req.getUsername());
+                    action.leaveRoom(req.getUsername(), req.getRoomName(), user);
                     break;
                 case "newQuestion":
-                    controls.addQuestion(req.getQuestion(), req.getRoomName());
+                    action.newQuestionPrefix(req.getRoomName(), req.getQuestion());
                     break;
                 case "startGame":
-                    controls.startGame(req.getRoomName());
+                    action.startGame(req.getRoomName());
                     break;
                 case "acceptQuestion":
-                    controls.newQuestion(user, req.getQuestion(), req.getUsername());
+                    games.newQuestion(req.getRoomName(), req.getQuestion(), req.getUsername());
                     break;
                 case "acceptAnswer":
-                    controls.newAnswer(user, req.getAnswer(), req.getUsername());
+                    games.newAnswer(req.getRoomName(), req.getAnswer(), req.getUsername());
                     break;
-                case "ping":
-                    controls.pong(user);
+                case "pong":
+                    connections.pong(req.getUsername(), new Date().getTime());
                     break;
-                case "close":
-                    controls.close(user, req.getUsername());
-                    user.close();
                 default:
                     System.out.println("Unsupported requested action '" + req.getAction() + "'");
                     break;
             }
+            connections.updateActivityDate(req.getUsername(), new Date().getTime());
         } catch (Exception e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
     }
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        System.out.println("closed");
-        System.out.println(statusCode);
-        System.out.println(reason);
+
     }
 }

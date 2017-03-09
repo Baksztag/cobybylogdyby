@@ -2,7 +2,11 @@
  * Created by Admin on 2017-02-18.
  */
 var socket = new WebSocket("ws://" + location.hostname + ":" + location.port + "/game/");
-var username = "";
+var app = {
+    username: "",
+    roomName: ""
+};
+
 var lastMessageSent = new Date().getTime();
 
 socket.onopen = function () {
@@ -52,8 +56,11 @@ socket.onmessage = function (msg) {
         case "listAllResults":
             listAllResults(data);
             break;
-        case "abort":
-            abortGame();
+        // case "abort":
+        //     abortGame();
+        //     break;
+        case "ping":
+            pong();
             break;
     }
 };
@@ -149,7 +156,7 @@ function toggle(container) {
 
 function newUser(username) {
     if (username != "") {
-        var obj = new Object();
+        var obj = {};
         obj.action = "newUser";
         obj.username = username;
         socket.send(JSON.stringify(obj));
@@ -158,7 +165,8 @@ function newUser(username) {
 
 function newUserResult(data) {
     if (data.result === "success") {
-        username = data.username;
+        app.username = data.username;
+        app.roomName = "lobby";
         toggle("login");
         toggle("rooms");
     }
@@ -173,7 +181,7 @@ function addRoom(name) {
         var obj = {};
         obj.action = "newRoom";
         obj.roomName = name;
-        obj.username = username;
+        obj.username = app.username;
         socket.send(JSON.stringify(obj));
         id("roomName").innerHTML = "Pokoj: " + name;
     }
@@ -181,10 +189,11 @@ function addRoom(name) {
 
 function newRoomResult(data) {
     if (data.result === "success") {
+        app.roomName = data.roomName;
         toggle("rooms");
         toggle("gameLobby");
         id("questionList").innerHTML = "";
-        showGameLobbyElements()
+        showGameLobbyElements();
 
         // show(id("startGame"));
         // show(id("newQuestion"));
@@ -215,11 +224,12 @@ function joinRoom(room) {
     var obj = {};
     obj.action = "join";
     obj.roomName = room;
-    obj.username = username;
+    obj.username = app.username;
     socket.send(JSON.stringify(obj));
 }
 
 function joinRoomResult(data) {
+    app.roomName = data.roomName;
     toggle("rooms");
     toggle("gameLobby");
     id("roomName").innerHTML = "Pokoj: " + data.roomName;
@@ -229,11 +239,13 @@ function joinRoomResult(data) {
 function leaveRoom() {
     var obj = {};
     obj.action = "leave";
-    obj.username = username;
+    obj.username = app.username;
+    obj.roomName = app.roomName;
     socket.send(JSON.stringify(obj));
 }
 
 function leaveRoomResult(data) {
+    app.roomName = "lobby";
     toggle("gameLobby");
     toggle("rooms");
     hideGameLobbyElements()
@@ -251,7 +263,8 @@ function addQuestion(question) {
         var obj = {};
         obj.action = "newQuestion";
         obj.question = question;
-        obj.roomName = id("roomName").innerHTML.slice(7);
+        obj.username = app.username;
+        obj.roomName = app.roomName;
         socket.send(JSON.stringify(obj));
     }
     id("newQuestion").value = "";
@@ -267,8 +280,8 @@ function updateQuestionList(data) {
 function startGame() {
     var o = {};
     o.action = "startGame";
-    o.username = username;
-    o.roomName = id("roomName").innerHTML.slice(7);
+    o.username = app.username;
+    o.roomName = app.roomName;
     socket.send(JSON.stringify(o));
 }
 
@@ -291,7 +304,8 @@ function acceptQuestion(question) {
         var o = {};
         o.action = "acceptQuestion";
         o.question = question;
-        o.username = username;
+        o.username = app.username;
+        o.roomName = app.roomName;
         socket.send(JSON.stringify(o));
         hide(id("question"));
         id("nextQuestion").value = "";
@@ -315,7 +329,8 @@ function acceptAnswer(answer) {
         var o = {};
         o.action = "acceptAnswer";
         o.answer = answer;
-        o.username = username;
+        o.username = app.username;
+        o.roomName = app.roomName;
         socket.send(JSON.stringify(o));
         hide(id("answer"));
         id("newAnswer").value = "";
@@ -334,6 +349,7 @@ function acceptAnswerResult(data) {
 }
 
 function endGame() {
+    app.roomName = "lobby";
     toggle("game");
     toggle("results");
 }
@@ -354,12 +370,10 @@ function listResults(data) {
 }
 
 function leaveGame() {
-    console.log("leaveStart");
     toggle("results");
     toggle("rooms");
     id("resultList").innerHTML = "";
     id("allResultsList").innerHTML = "";
-    console.log("leaveEnd");
 }
 
 function listAllResults(data) {
@@ -377,11 +391,11 @@ function listAllResults(data) {
     }
 }
 
-function ping() {
-    var o = {};
-    o.action = "ping";
-    socket.send(JSON.stringify(o));
-}
+// function ping() {
+//     var o = {};
+//     o.action = "ping";
+//     socket.send(JSON.stringify(o));
+// }
 
 // function closeConnection() {
 //     var o = {};
@@ -390,21 +404,29 @@ function ping() {
 //     socket.send(JSON.stringify(o));
 // }
 
-function abortGame() {
-    toggle("game");
-    toggle("rooms");
-    id("resultList").innerHTML = "";
-    id("allResultsList").innerHTML = "";
-}
+// function abortGame() {
+//     toggle("game");
+//     toggle("rooms");
+//     id("resultList").innerHTML = "";
+//     id("allResultsList").innerHTML = "";
+// }
 
-setInterval(
-    function () {
-        var interval = 30 * 1000;
-        var currentTime = new Date().getTime();
-        if (lastMessageSent < currentTime - interval) {
-            ping();
-            lastMessageSent = currentTime;
-        }
-    },
-    1000
-);
+// setInterval(
+//     function () {
+//         var interval = 30 * 1000;
+//         var currentTime = new Date().getTime();
+//         if (lastMessageSent < currentTime - interval) {
+//             ping();
+//             lastMessageSent = currentTime;
+//         }
+//     },
+//     1000
+// );
+
+function pong() {
+    var o = {};
+    o.action = "pong";
+    o.username = app.username;
+    o.roomName = app.roomName;
+    socket.send(JSON.stringify(o));
+}
